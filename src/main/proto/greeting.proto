@@ -1,0 +1,54 @@
+syntax = "proto3";
+package com.myapp.grpc_server.proto;
+
+option java_multiple_files = true;
+
+import "google/api/annotations.proto";
+
+message Book {
+  int32 book_id = 1;
+  string title = 2;
+  float book_price = 3;
+  int32 pages = 4;
+  int32 author_id = 5;
+}
+
+message Author {
+  int32 author_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string gender = 4;
+  int32 book_id = 5;
+}
+
+message EchoMessage {
+  string value = 1;
+}
+
+service EchoService {
+  rpc Echo(EchoMessage) returns (EchoMessage) {
+    option (google.api.http) = {
+      post: "/v1/echo"
+      body: "*"
+    };
+  }
+}
+
+service BookAuthorService {
+  //unary - synchronous - client will send one request and one response will be received.
+  rpc getAuthor(Author) returns (Author) {
+    option (google.api.http) = {
+      get: "/author/{id}"
+    };
+  }
+
+  //server streaming - async
+  //client will send one request and server will respond with stream of responses to the client
+  rpc getBooksByAuthor(Author) returns (stream Book);
+
+  //client streaming - async
+  rpc getExpensiveBook(stream Book) returns (Book) {
+  }
+
+  //bi-directional streaming - async
+}

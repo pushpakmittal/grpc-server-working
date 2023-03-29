@@ -1,0 +1,42 @@
+To generate protobuf descriptor : protoc -Igoogleapis -I. --include_imports --include_source_info --descriptor_set_out=greeting.pb src/main/proto/greeting.proto
+
+To run envoy : envoy --config-path envoy-config3.yml
+
+
+
+
+docker run -it --rm --name envoy --network="host" \
+  -v "$(pwd)/greeting.pb:/data/greeting.pb:ro" \
+  -v "$(pwd)/envoy-config.yml:$(pwd)/envoy-config.yml:ro" \
+  envoyproxy/envoy:dev-6c702f45fadf4abd2f24605e3d9e81c748b13f85
+
+docker run --name envoy -p 51051:51051 -p 9901:9901 -v
+
+curl -X POST http://localhost:51051/author/1 \
+          -H 'Content-Type: application/json' \
+          -d '{
+            "author_id" : "1"
+        }'
+
+
+ curl -X POST \
+   http://localhost:51051/v1/reservations \
+   -H 'Content-Type: application/json' \
+   -d '{
+     "title": "Lunchmeeting2",
+     "venue": "JDriven Coltbaan 3",
+     "room": "atrium",
+     "timestamp": "2018-10-10T11:12:13",
+     "attendees": [
+         {
+             "ssn": "1234567890",
+             "firstName": "Jimmy",
+             "lastName": "Jones"
+         },
+         {
+             "ssn": "9999999999",
+             "firstName": "Dennis",
+             "lastName": "Richie"
+         }
+     ]
+ }'
